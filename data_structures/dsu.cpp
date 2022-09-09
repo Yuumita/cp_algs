@@ -2,33 +2,35 @@
 using namespace std;
 
 struct DSU{
-	int N;
-	vector<int> p, sz;
-	vector<vector<int>> g;
-	DSU(int n){
-		N = n;
-		g.assign(n, vector<int> ());		
-		p.resize(n); sz.assign(n, 1);
-		for(int i=0;i<n;i++) p[i] = i;
-	}
-	void resize(int n){
-		N = n;
-		g.assign(n, vector<int> ());		
-		p.resize(n); 
-		for(int i=0;i<n;i++) p[i] = i;
+	int components = 0;
+	vector<int> parent, size;
+
+	DSU(int n = -1){
+		if(n >= 0) init(n);
 	}
 
-	void merge(int u, int v){ // merging u to v
-		int fu = f(u), fv = f(v);
-		if(sz[fu] > sz[fv])
-			return merge(v, u);
-			
-		sz[fv] += sz[fu];
-		p[fu] = fv;
+	void init(int n){
+		components = n;
+		size.assign(n+1, 1);
+		parent.resize(n+1); 
+		iota(parent.begin(), parent.end(), 0);
 	}
-	int f(int u){
-		if(p[u] == u) return u;
-		return p[u] = f(p[u]);
+
+	int find(int u){
+		return u == parent[u] ? u : parent[u] = find(parent[u]);
+	}
+
+	// merging u to v, returns false if they were connected (true if merged succesfully)
+	bool merge(int u, int v){ 
+		int u = find(u), v = find(v);
+		if(u == v) return false;
+
+		if(size[u] > size[v]) swap(u, v); 
+
+		parent[u] = v;
+		size[v] += size[u];
+		components--;
+		return true;
 	}
 };
 
@@ -39,7 +41,7 @@ int main(){
 	for(int i=0;i<Q;i++){
 		cin >> t[i] >> u[i] >> v[i];
 		if(t[i]){
-			cout << (dsu.f(u[i]) == dsu.f(v[i])) << endl;			
+			cout << (dsu.find(u[i]) == dsu.find(v[i])) << endl;			
 		} else {
 			dsu.merge(u[i], v[i]);
 		}
