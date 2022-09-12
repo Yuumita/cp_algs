@@ -28,6 +28,18 @@ struct mint {
         return *this;
     }
 
+    mint &operator ++ () {
+		v = (v == MOD - 1 ? 0 : v + 1);
+        return *this;
+    }
+    mint &operator -- () {
+		v = (v == 0 ? MOD - 1 : v - 1);
+        return *this;
+    }
+
+	mint operator++(int) { mint before = *this; ++*this; return before; }
+	mint operator--(int) { mint before = *this; --*this; return before; }
+
     mint operator-() const { return mint(-v); }
     mint operator+(const mint &p) const { return mint(*this) += p; }
     mint operator-(const mint &p) const { return mint(*this) -= p; }
@@ -64,9 +76,9 @@ struct mint {
     }
     
     int get() const { return v; }
+	operator int() const { return v; }
     static constexpr int get_mod() { return MOD; }    
 };
-
 
 int main(){
 }
