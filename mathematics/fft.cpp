@@ -1,13 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
-#define pb  push_back
-#define mp make_pair
-#define all(x) x.begin(), x.end()
-#define forn(i,l,r) for(int (i)=(l); (i)<(r); (i)++)
-#define rinc(i,l,r) for(int (i)=(l); (i)<=(r); (i)++)
-#define rdec(i,r,l) for(int (i)=(r); (i)>=(l); (i)--)
-const int MOD = 1e9 + 7, INF = 2e9+5, NN = 2e6;
 
 using cd = complex<double>;
 const double PI = acos(-1);
@@ -24,19 +16,19 @@ void fft(vector<cd> &a, bool invert){
 	fft(a0, invert);
 	fft(a1, invert);
 
-	double angle = 2 * PI / n * (invert ?  -1 : 1);
+	double angle = 2 * PI / n * (invert ?  -1 : +1);
 	cd w(1), we(cos(angle), sin(angle));
-	for(int i = 0; i < n/2; i++, w *= we) {
+	for(int i = 0; 2*i < n; i++, w *= we) {
 		a[i]       = a0[i] + w * a1[i];
-		a[n/2 + i] = a0[i] - w * a1[i];
+		a[i + n/2] = a0[i] - w * a1[i];
 		if(invert) {
 			a[i] /= 2; 
-			a[n/2 + i] /= 2;
+			a[i + n/2] /= 2;
 		}
 	}
 }
 
-vector<int> multiply(vector<int> &a, vector<int> &b) { 
+vector<long long> multiply(vector<long long> &a, vector<long long> &b) { 
 	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
 	int n = 1;
 	while(n < a.size() + b.size()) n <<= 1;
@@ -50,21 +42,21 @@ vector<int> multiply(vector<int> &a, vector<int> &b) {
 
 	fft(fa, true);
 
-	vector<int> ab(n);
+	vector<long long> ab(n);
 	for(int i = 0; i < n; i++) ab[i] = round(fa[i].real());
 	return ab;
 }
 
 
-void output_poly(vector<int> &a) {
+void output_poly(vector<long long> &a) {
 	for(int k = 0; k < a.size(); k++){
 		cout << a[k] << "x^" << k << (k + 1 < a.size() ? " + " : "\n");
 	}
 }
  
 int main(){
-	vector<int> A = {2, 4, 3};
-	vector<int> B = {3, -4, 1, 0, 0};
+	vector<long long> A = {2, 4, 3};
+	vector<long long> B = {3, -4, 1, 0, 0};
 
 	cout << "A(x)   = ";
 	output_poly(A);
@@ -72,7 +64,7 @@ int main(){
 	cout << "B(x)   = ";
 	output_poly(B);
 
-	vector<int> AB = multiply(A, B);
+	vector<long long> AB = multiply(A, B);
 
 	cout << "A*B(x) = ";
 	output_poly(AB);

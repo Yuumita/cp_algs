@@ -12,7 +12,7 @@ struct RMQ {
     vector<vector<int>> spi; 
 
     RMQ(const vector<T> &v0 = {}) {
-        if(int(v0.size()) > 0) build(v0);
+        if(int(v0.size()) > 0) init(v0);
     }
 
     // if v[i] == v[j] returns j
@@ -20,7 +20,7 @@ struct RMQ {
         return (minimum ? v[i] < v[j] : v[i] > v[j]) ? i : j;
     }
 
-    void build(const vector<T> &v0) {
+    void init(const vector<T> &v0) {
         n = v0.size();
         K = max((n == 0 ? -1: 31 - __builtin_clz(n)) + 1, K);
 
