@@ -1,10 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const char MIN_CHAR = 'a'; 
-const int ALPHABET = 26;
+//const char MIN_CHAR = 'a'; 
+//const int ALPHABET = 26;
 
-//template<char MIN_CHAR = 'a', int ALPHABET = 26>
+template<char MIN_CHAR = 'a', int ALPHABET = 26>
 struct array_trie {
     struct trie_node {
         int child[ALPHABET];
@@ -61,7 +61,7 @@ int main() {
 
     int N;
     cin >> N;
-    array_trie trie;
+    array_trie<> trie;
 
     for (int i = 0; i < N; i++) {
         string str;

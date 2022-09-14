@@ -22,7 +22,7 @@ struct DSU{
 
 	// merging u to v, returns false if they were connected (true if merged succesfully)
 	bool merge(int u, int v){ 
-		int u = find(u), v = find(v);
+		u = find(u), v = find(v);
 		if(u == v) return false;
 
 		if(size[u] > size[v]) swap(u, v); 

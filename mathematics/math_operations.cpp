@@ -3,15 +3,16 @@ using namespace std;
 
 using i64 = long long;
 
-template<int mod>
-T bin_exp(T x, i64 n) {
+template<typename T = long long>
+T exp(T x, int n) {
     T res = 1;
-    while(b > 0) {
-        if(b % 2) res *= x;
+    while(n > 0) {
+        if(n % 2) res *= x;
         x *= x, n /= 2;
     }
-    return T;
+    return res;
 }
  
 int main(){
+    cout << exp(3,3) << endl;
 }
