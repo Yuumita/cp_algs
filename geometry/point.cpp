@@ -7,7 +7,8 @@ using dist_t = long double;
 struct point {
     int64_t x, y;
 
-    point(int64_t _x = 0, int64_t _y = 0) : x(_x), y(_y) {}
+    point() : x(0), y(0) {}
+    point(int64_t _x, int64_t _y) : x(_x), y(_y) {}
 
     point& operator+=(const point &other) { x += other.x, y += other.y; return *this; }
     point& operator-=(const point &other) { x -= other.x, y -= other.y; return *this; }
@@ -32,46 +33,46 @@ struct point {
 };
 
 // dot product, norm (length^2), abs (length)
-int64_t dot(point &a, point &b) {
-    return a.x * b.x + a.y + b.y;
+int64_t dot(point a, point b) {
+    return a.x * b.x + a.y * b.y;
 }
 
-int64_t norm(point &a) {
+int64_t norm(point a) {
     return dot(a, a);
 }
 
-dist_t abs(point &a) {
+dist_t abs(point a) {
     return sqrt(norm(a));
 }
 
-int64_t det(point &a, point &b) {
+int64_t det(point a, point b) {
     return a.x * b.y - a.y * b.x;
 }
 
-double angle(point &a, point &b) {
+double angle(point a, point b) {
     return acos(dot(a, b) / abs(a) / abs(b));
 }
 
-dist_t euclidean_distance(point &a, point &b) {
+dist_t euclidean_distance(point a, point b) {
     return abs(a - b);
 }
 
-int64_t manhattan_distance(point &a, point &b) {
+int64_t manhattan_distance(point a, point b) {
     return abs(a.x - b.x) + abs(a.y - b.y);
 }
 
 
-int orientation(point &a, point &b, point &c) {
+int orientation(point a, point b, point c) {
    int64_t v = det(b - a, c - a); // = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y);
    if(v > 0) return +1; // counter-clockwise
    if(v < 0) return -1; // clockwise
    return 0; // collinear 
 }
 
-bool collinear(point &a, point &b, point &c) { return orientation(a, b, c) == 0; }
+bool collinear(point a, point b, point c) { return orientation(a, b, c) == 0; }
 
 // is_clockwise
-bool cw(point &a, point &b, point &c, bool include_collinear = false) {
+bool cw(point a, point b, point c, bool include_collinear = false) {
     int o = orientation(a, b, c);
     return o < 0 || o == 0 && include_collinear;
 }
