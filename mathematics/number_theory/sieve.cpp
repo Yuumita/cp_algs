@@ -5,18 +5,12 @@ const int MAXN = 2e5;
 
 // --- Sieve of Eratosthenes ---
 
-// O(1) prime check and O(logA) factorization in [1, N]
-// with O(N) precomputation
-
-
-int spf[MAXN + 1]; // Smallest prime factor
-
+// O(1) prime check and O(logA) factorization in [1, N] with O(N) precomputation with spf (Smallest prime factor)
+int spf[MAXN + 1]; 
 void prime_sieve() {
-    // Initilazation
     for(int i = 1; i <= MAXN; i++) spf[i] = i; 
     for(int i = 2; i <= MAXN; i += 2) spf[i] = 2;
     for(int i = 3; i <= MAXN; i += 2) if(spf[i] == i) {
-        // go through all numbers divisible by i and check if it not already marked
         for(long long j = (long long)i*i; j <= MAXN; j += i){
             if(spf[j] == j)
                 spf[j] = i;
@@ -34,12 +28,8 @@ vector<int> get_factorization(int x) {
     return ret;
 }
 
-// ---
-
 // Euler totient sieve (phi precomputation)
-
 int phi[MAXN + 1];
-
 void precompute_phi() {
     for(int i = 1; i <= MAXN; i++) phi[i] = i;
     for(int i = 1; i <= MAXN; i++)

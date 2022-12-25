@@ -1,45 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const bool is_prime = true;
-const int MOD = 998244353;
-struct mint {
+template <int MOD, bool is_prime = false>
+struct modint {
     int v;
-    mint(): v(0) {}
-    mint(int vv) : v(vv < 0 ? vv % MOD + MOD : vv % MOD) {}
-    mint(long long vv) : v(vv < 0 ? vv % MOD + MOD : vv % MOD) {}
-    mint(int vv, nullptr_t) : v(vv) {}
+    modint(): v(0) {}
+    modint(int vv) : v(vv < 0 ? vv % MOD + MOD : vv % MOD) {}
+    modint(long long vv) : v(vv < 0 ? vv % MOD + MOD : vv % MOD) {}
+    modint(int vv, nullptr_t) : v(vv) {}
     operator int() const { return v; }
 
-    mint& operator+=(mint x) { v += x.v; if(v >= MOD) v -= MOD; return *this; }
-    mint& operator++() { if(v == MOD - 1) v = 0; else v++; return *this; }
-    mint operator++(int) { mint ans(*this); operator++(); return ans; }
-    mint operator-() const { return mint(0) -= *this; }
-    mint operator-(mint x) const { return mint(*this) -= x; }
-    mint& operator-=(mint x) { if(v < x.v) v += MOD; v -= x.v; return *this; }
-    mint& operator--() { if(v == 0) v = MOD - 1; else v--; return *this; }
-    mint operator--(int) { mint ans(*this); operator--(); return ans; }
-    mint& operator*=(mint x) { v = 1ll * v * x.v % MOD; return *this; }
-    mint& operator/=(mint x) { return operator*=(x.inverse()); }
+    modint& operator+=(modint x) { v += x.v; if(v >= MOD) v -= MOD; return *this; }
+    modint& operator++() { if(v == MOD - 1) v = 0; else v++; return *this; }
+    modint operator++(int) { modint ans(*this); operator++(); return ans; }
+    modint operator-() const { return modint(0) -= *this; }
+    modint operator-(modint x) const { return modint(*this) -= x; }
+    modint& operator-=(modint x) { if(v < x.v) v += MOD; v -= x.v; return *this; }
+    modint& operator--() { if(v == 0) v = MOD - 1; else v--; return *this; }
+    modint operator--(int) { modint ans(*this); operator--(); return ans; }
+    modint& operator*=(modint x) { v = 1ll * v * x.v % MOD; return *this; }
+    modint& operator/=(modint x) { return operator*=(x.inverse()); }
 
-    template<class T> mint operator+(T x) const { return mint(*this) += x; }
-    template<class T> mint& operator+=(T x) { return operator+=(mint(x)); }
-    template<class T> mint operator-(T x) const { return mint(*this) -= x; }
-    template<class T> mint& operator-=(T x) { return operator-=(mint(x)); }
-    template<class T> mint operator*(T x) const { return mint(*this) *= x; }
-    template<class T> mint& operator*=(T x) { return operator*=(mint(x)); }
-    template<class T> mint operator/(T x) const { return mint(*this) /= x; }
-    template<class T> mint& operator/=(T x) { return operator/=(mint(x)); }
+    template<class T> modint operator+(T x) const { return modint(*this) += x; }
+    template<class T> modint& operator+=(T x) { return operator+=(modint(x)); }
+    template<class T> modint operator-(T x) const { return modint(*this) -= x; }
+    template<class T> modint& operator-=(T x) { return operator-=(modint(x)); }
+    template<class T> modint operator*(T x) const { return modint(*this) *= x; }
+    template<class T> modint& operator*=(T x) { return operator*=(modint(x)); }
+    template<class T> modint operator/(T x) const { return modint(*this) /= x; }
+    template<class T> modint& operator/=(T x) { return operator/=(modint(x)); }
 
-    mint pow(int n) const {
-        mint ret(1), mul(v);
+    modint pow(int n) const {
+        modint ret(1), mul(v);
         while (n > 0) {
             if (n & 1) ret *= mul;
             mul *= mul, n /= 2;
         }
         return ret;
     }
-    mint inverse() const {
+    modint inverse() const {
         // Fermat's Little Theorem
         if(is_prime) return pow(MOD - 2);
         int a = v, b = MOD, u = 1, v = 0, t;
@@ -48,16 +47,19 @@ struct mint {
         swap(a -= t * b, b);
         swap(u -= t * v, v);
         }
-        return mint(u);
+        return modint(u);
     }
 
-    friend ostream &operator<<(ostream &os, const mint &p) { return os << p.v; }
-    friend istream &operator>>(istream &is, mint &a) {
+    friend ostream &operator<<(ostream &os, const modint &p) { return os << p.v; }
+    friend istream &operator>>(istream &is, modint &a) {
         int t; is >> t;
-        a = mint(t);
+        a = modint(t);
         return (is);
     }
 };
+
+const int MOD = 998244353;
+using mint = modint<MOD, true>;
 
 int main(){
 }

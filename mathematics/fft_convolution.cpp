@@ -47,7 +47,6 @@ vector<long long> multiply(vector<long long> &a, vector<long long> &b) {
 	return ab;
 }
 
-
 void output_poly(vector<long long> &a) {
 	for(int k = 0; k < a.size(); k++){
 		cout << a[k] << "x^" << k << (k + 1 < a.size() ? " + " : "\n");
@@ -55,17 +54,11 @@ void output_poly(vector<long long> &a) {
 }
  
 int main(){
-	vector<long long> A = {2, 4, 3};
-	vector<long long> B = {3, -4, 1, 0, 0};
-
-	cout << "A(x)   = ";
-	output_poly(A);
-
-	cout << "B(x)   = ";
-	output_poly(B);
-
-	vector<long long> AB = multiply(A, B);
-
-	cout << "A*B(x) = ";
-	output_poly(AB);
+	int N, M; cin >> N >> M;
+	vector<long long> A(N), B(M), C;
+	for(int i = 0; i < N; i++) cin >> A[i];
+	for(int i = 0; i < M; i++) cin >> B[i];
+	C = multiply(A, B);
+	for(int i = 0; i < N + M - 1; i++) cout << C[i] << " ";
+	cout << endl;
 }
