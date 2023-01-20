@@ -83,16 +83,16 @@ void build_convex_hull(vector<point> &points, bool include_collinear = false) {
         });
     sort(points.begin(), points.end(), 
         [&](point a, point b){
-            int o = orientation(a, b);
+            int o = orientation(p0, a, b);
             if(o == 0) 
                 return norm(a - p0) < norm(b - p0);
             return o < 0;
         });
 
     if (include_collinear) {
-        int i = (int)a.size()-1;
-        while (i >= 0 && collinear(p0, a[i], a.back())) i--;
-        reverse(a.begin()+i+1, a.end());
+        int i = (int)points.size()-1;
+        while (i >= 0 && collinear(p0, points[i], points.back())) i--;
+        reverse(points.begin()+i+1, points.end());
     }
 
     vector<point> st;
