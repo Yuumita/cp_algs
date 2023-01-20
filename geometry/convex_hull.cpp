@@ -89,6 +89,12 @@ void build_convex_hull(vector<point> &points, bool include_collinear = false) {
             return o < 0;
         });
 
+    if (include_collinear) {
+        int i = (int)a.size()-1;
+        while (i >= 0 && collinear(p0, a[i], a.back())) i--;
+        reverse(a.begin()+i+1, a.end());
+    }
+
     vector<point> st;
     for(int i = 0; i < int(points.size()); i++) {
         while(st.size() > 1 && !cw(st[st.size()-2], st[st.size()-1], points[i], include_collinear))
