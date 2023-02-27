@@ -28,23 +28,25 @@ void fft(vector<cd> &a, bool invert){
 	}
 }
 
-vector<long long> multiply(vector<long long> &a, vector<long long> &b) { 
+vector<long long> convolution(vector<long long> &a, vector<long long> &b) { 
 	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
 	int n = 1;
 	while(n < a.size() + b.size()) n <<= 1;
+
 	fa.resize(n);
 	fb.resize(n);
 
 	fft(fa, false);
 	fft(fb, false);
 
-	for(int i = 0 ; i < n; i++) fa[i] = fa[i] * fb[i];
+	for(int i = 0 ; i < n; i++) 
+		fa[i] *= fb[i];
 
 	fft(fa, true);
 
-	vector<long long> ab(n);
-	for(int i = 0; i < n; i++) ab[i] = round(fa[i].real());
-	return ab;
+	vector<long long> c(n);
+	for(int i = 0; i < n; i++) c[i] = round(fa[i].real());
+	return c;
 }
 
 void output_poly(vector<long long> &a) {
@@ -58,7 +60,7 @@ int main(){
 	vector<long long> A(N), B(M), C;
 	for(int i = 0; i < N; i++) cin >> A[i];
 	for(int i = 0; i < M; i++) cin >> B[i];
-	C = multiply(A, B);
+	C = convolution(A, B);
 	for(int i = 0; i < N + M - 1; i++) cout << C[i] << " ";
 	cout << endl;
 }
