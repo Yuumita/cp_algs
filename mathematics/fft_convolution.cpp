@@ -6,7 +6,7 @@ const double PI = acos(-1);
 
 void fft(vector<cd> &a, bool invert){
 	int n = a.size();
-	if(n == 1) return;
+	if(n <= 1) return;
 	vector<cd> a0(n/2), a1(n/2);
 	for(int i = 0; 2*i < n; i++) {
 		a0[i] = a[2*i];
@@ -26,6 +26,40 @@ void fft(vector<cd> &a, bool invert){
 			a[i + n/2] /= 2;
 		}
 	}
+}
+
+vector<long long> cyclic_convolution_naive(vector<long long> &a, vector<long long> &b) { 
+	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+	assert(a.size() == b.size());
+	int N = (int)a.size();
+	vector<long long> c(N, 0);
+	for(int k = 0; k < N; k++) for(int i = 0; i < N; i++) c[k] += a[i] * b[(k-i + N)%N];
+	return c;
+}
+
+vector<long long> cyclic_convolution(vector<long long> &a, vector<long long> &b) { 
+	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+	assert(a.size() == b.size());
+	int N = max((int)a.size(), (int)b.size()), n = 1;
+	while(n < 2*N) n <<= 1;
+
+	fa.resize(n);
+	for(int i = 0; i < (int)a.size(); i++) 
+		fa[i + n - a.size()] = fa[i];
+	fb.resize(n);
+
+	fft(fa, false);
+	fft(fb, false);
+
+	for(int i = 0 ; i < n; i++) 
+		fa[i] *= fb[i];
+
+	fft(fa, true);
+
+	vector<long long> c(n);
+	for(int i = 0; i < n; i++) c[i] = round(fa[i].real());
+	while((int)c.size() > N) c.pop_back();
+	return c;
 }
 
 vector<long long> convolution(vector<long long> &a, vector<long long> &b) { 
@@ -54,13 +88,15 @@ void output_poly(vector<long long> &a) {
 		cout << a[k] << "x^" << k << (k + 1 < a.size() ? " + " : "\n");
 	}
 }
+
+template<class T> ostream& operator <<(ostream &os, const vector<T> &v) { for(auto &e: v) os << e << " "; return os; }
  
 int main(){
-	int N, M; cin >> N >> M;
-	vector<long long> A(N), B(M), C;
-	for(int i = 0; i < N; i++) cin >> A[i];
-	for(int i = 0; i < M; i++) cin >> B[i];
-	C = convolution(A, B);
-	for(int i = 0; i < N + M - 1; i++) cout << C[i] << " ";
-	cout << endl;
+	int N; cin >> N;
+	vector<long long> A(N), B(N), C;
+	for(auto &e: A) cin >> e;
+	for(auto &e: B) cin >> e;
+	cout << convolution(A, B) << endl;
+	cout << cyclic_convolution(A, B) << endl;
+	cout << cyclic_convolution_naive(A, B) << endl;
 }
