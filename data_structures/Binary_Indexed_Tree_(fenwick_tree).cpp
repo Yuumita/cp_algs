@@ -33,9 +33,9 @@ struct BIT {
 
 	// return A[0] + A[1] + ... + A[r]
 	T query(int r){ 
-		T sum(); 
+		T sum(0); 
 		for(int i = r; i >= 0; i = g(i) - 1)
-			sum += T[i];	
+			sum += tree[i];	
 		return sum;
 	}
 };

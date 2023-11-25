@@ -41,7 +41,7 @@ struct RMQ {
 
     // Returns minarg v[L..R], (ties broken with bigger index)
     int query_index(int L, int R) {
-        assert(0 <= L && R < n);
+        assert(0 <= L && R < n && L <= R);
         int j = log[R - L + 1];
         return better_index(spi[L][j], spi[R - (1 << j) + 1][j]);
     }
@@ -97,7 +97,7 @@ struct LCA {
         }
     }
 
-    // euler tour to prepare for rmq in dephts
+    // euler tour to prepare for rmq in depths
     void tour_dfs(int u) {
         first_occurence[u] = int(euler.size());
         euler.push_back(u);
@@ -129,7 +129,7 @@ struct LCA {
 
 
         if(build_rmq)
-            rmq.build(euler_depths);
+            rmq.init(euler_depths);
 
         built = true; 
     }

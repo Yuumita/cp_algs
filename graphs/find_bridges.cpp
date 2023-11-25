@@ -51,8 +51,10 @@ struct find_bridges {
     }
 
     void build() {
+        visited.assign(n, false);
+        tin.assign(n, -1);
+        low.assign(n, n+1);
         int t = 0; 
-        init(n); 
         for(int i = 0; i < n; i++)
             if(!visited[i])
                 dfs(i, t);

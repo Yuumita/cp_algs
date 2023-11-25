@@ -1,11 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template<typename T = long long>
 struct seg_tree {
 	int N = 1;
-	vector<long long> t;
+	vector<T> t;
 
-	void build(vector<long long> &a, int v, int tl, int tr) {
+	void build(vector<T> &a, int v, int tl, int tr) {
 		if(tl == tr) {
 			if(tl < a.size()) t[v] = a[tl];
 		} else {
@@ -18,12 +19,12 @@ struct seg_tree {
 
 	void resize(int n) {
 		N = 1; while(N < n) N <<= 1;
-		t.assign(2*N+1, 0);
+		t.assign(2*N+1, T(0));
 	}
 
 	seg_tree(int n) { resize(n); }	
 
-	seg_tree(vector<long long> &a) {
+	seg_tree(vector<T> &a) {
 		resize(a.size());
 		build(a, 1, 0, N-1);
 	}	
@@ -31,7 +32,7 @@ struct seg_tree {
 	int size() { return N; }
 
 	// first call: update(1, 0, tree.size()-1, pos, new_val)
-	void update(int v, int tl, int tr, int pos, long long new_val) {
+	void update(int v, int tl, int tr, int pos, T new_val) {
 		if(tl == tr) {
 			t[v] = new_val;
 		} else {
@@ -45,7 +46,7 @@ struct seg_tree {
 	}
 
 	// first call: update(1, 0, tree.size()-1, l, r)
-	long long query(int v, int tl, int tr, int l, int r) {
+	T query(int v, int tl, int tr, int l, int r) {
 		if(r < l) return 0;
 		if(l == tl && r == tr) 
 			return t[v];
@@ -53,6 +54,14 @@ struct seg_tree {
 		return query(2*v, tl, tm, l, min(tm, r))
 				+ query(2*v+1, tm+1, tr, max(l, tm+1), r);
 
+	}
+
+	void update(int pos, long long new_val) {
+		update(1, 0, size()-1, pos, new_val);
+	}
+
+	T query(int l, int r) {
+		return query(1, 0, size()-1, l, r);
 	}
 
 };
