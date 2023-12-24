@@ -1,10 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template<typename T = long long>
+// type, identity element
+template<typename T = long long, T (*e)() = T(0)>
 struct seg_tree {
 	int N = 1;
 	vector<T> t;
+
+	void op(T x, T y) {
+		return x + y;
+	}
 
 	void build(vector<T> &a, int v, int tl, int tr) {
 		if(tl == tr) {
@@ -13,57 +18,59 @@ struct seg_tree {
 			int tm = (tl + tr)/2;
 			build(a, 2*v, tl, tm);
 			build(a, 2*v+1, tm+1, tr);
-			t[v] = t[2*v] + t[2*v+1];
+			t[v] = op(t[2*v], t[2*v+1]);
 		}
 	}
 
+	int size() { return N; }
 	void resize(int n) {
 		N = 1; while(N < n) N <<= 1;
-		t.assign(2*N+1, T(0));
+		t.assign(2*N+1, e());
 	}
-
 	seg_tree(int n) { resize(n); }	
-
 	seg_tree(vector<T> &a) {
 		resize(a.size());
 		build(a, 1, 0, N-1);
 	}	
 
-	int size() { return N; }
 
-	// first call: update(1, 0, tree.size()-1, pos, new_val)
-	void update(int v, int tl, int tr, int pos, T new_val) {
+	void _update(int v, int tl, int tr, int p, T x) {
 		if(tl == tr) {
-			t[v] = new_val;
+			t[v] = x;
 		} else {
 			int tm = (tl + tr)/2;
 			if(pos <= tm) 
-				update(2*v, tl, tm, pos, new_val);
+				_update(2*v, tl, tm, p, x);
 			else
-				update(2*v+1, tm+1, tr, pos, new_val);
-			t[v] = t[2*v] + t[2*v+1];
+				_update(2*v+1, tm+1, tr, p, x);
+
+			t[v] = op(t[2*v], t[2*v+1]);
 		}
 	}
 
-	// first call: update(1, 0, tree.size()-1, l, r)
-	T query(int v, int tl, int tr, int l, int r) {
-		if(r < l) return 0;
+	T _query(int v, int tl, int tr, int l, int r) {
+		if(r < l) 
+			return e();
 		if(l == tl && r == tr) 
 			return t[v];
-		int tm = (tl + tr)/2;
-		return query(2*v, tl, tm, l, min(tm, r))
-				+ query(2*v+1, tm+1, tr, max(l, tm+1), r);
 
+		int tm = (tl + tr)/2;
+		return op(_query(2*v, tl, tm, l, min(tm, r)),
+				_query(2*v+1, tm+1, tr, max(l, tm+1), r));
 	}
 
-	void update(int pos, long long new_val) {
-		update(1, 0, size()-1, pos, new_val);
+	T get(int p) { // To be tested
+		if(!(0 <= p && p < N)) return e();
+		return t[p + N];
+	}
+
+	void set(int pos, T new_val) {
+		_update(1, 0, size()-1, pos, new_val);
 	}
 
 	T query(int l, int r) {
-		return query(1, 0, size()-1, l, r);
+		return _query(1, 0, size()-1, l, r);
 	}
-
 };
 
 int main(){
