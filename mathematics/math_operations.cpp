@@ -4,11 +4,11 @@ using namespace std;
 using i64 = long long;
 
 template<typename T = long long>
-T exp(T x, int n) {
+T exp(T x, long long n) {
     T res = 1;
     while(n > 0) {
-        if(n % 2) res *= x;
-        x *= x, n /= 2;
+        if(n & 1) res *= x;
+        x *= x, n >>= 1;
     }
     return res;
 }
