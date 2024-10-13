@@ -1,95 +1,83 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// type, identity element
-template<typename T = long long, T (*e)() = T(0)>
-struct seg_tree {
-	int N = 1;
-	vector<T> t;
+template<class S = long long>
+class segtree {
+public:
+	S op(S a, S b) const { // binary operation between monoids
+		return a + b;
+	}
+	S e() const { // identity element
+		return S(0);
+	}
+private: 
+	int n, N, log;
+	vector<S> tree;
+	void update(int k) {
+		tree[k] = op(tree[2*k], tree[2*k+1]);
+	}
+public:
 
-	void op(T x, T y) {
-		return x + y;
+	S get(int p) const {
+		return tree[p + N];
 	}
 
-	void build(vector<T> &a, int v, int tl, int tr) {
-		if(tl == tr) {
-			if(tl < a.size()) t[v] = a[tl];
-		} else {
-			int tm = (tl + tr)/2;
-			build(a, 2*v, tl, tm);
-			build(a, 2*v+1, tm+1, tr);
-			t[v] = op(t[2*v], t[2*v+1]);
+	void set(int p, S x) {
+		assert(0 <= p && p < N);
+		p += N;
+		tree[p] = x;
+		for(int i = 1; i <= log; i++) update(p >> i);
+	}
+
+	// inclusive, 0-indexed
+	S prod(int l, int r) const {
+		assert(0 <= l && l <= r && r < n);
+		S lv = e(), rv = e();
+		l += N, r += N + 1; // now r becomes non-inclusive
+		while(l < r) {
+			if(l & 1) lv = op(lv, tree[l++]);
+			if(r & 1) rv = op(tree[--r], rv);
+			l >>= 1, r >>= 1;
+		}
+		return op(lv, rv);
+	}
+
+	S all_prod() const { return tree[1]; }
+
+	segtree(): segtree(0) {}
+	segtree(int _n) : segtree(vector<S>(n, e())) {}
+	segtree(const vector<S> &v) : n(v.size()) {
+		N = 1, log = 0;
+		while(N < n) {
+			N <<= 1, log++;
+		}
+		tree.assign(2*N, e());
+		for(int i = 0; i < n; i++) tree[N + i] = v[i];
+		for(int i = N-1; i >= 1; i--) {
+			update(i);
 		}
 	}
 
-	int size() { return N; }
-	void resize(int n) {
-		N = 1; while(N < n) N <<= 1;
-		t.assign(2*N+1, e());
-	}
-	seg_tree(int n) { resize(n); }	
-	seg_tree(vector<T> &a) {
-		resize(a.size());
-		build(a, 1, 0, N-1);
-	}	
-
-
-	void _update(int v, int tl, int tr, int p, T x) {
-		if(tl == tr) {
-			t[v] = x;
-		} else {
-			int tm = (tl + tr)/2;
-			if(pos <= tm) 
-				_update(2*v, tl, tm, p, x);
-			else
-				_update(2*v+1, tm+1, tr, p, x);
-
-			t[v] = op(t[2*v], t[2*v+1]);
-		}
-	}
-
-	T _query(int v, int tl, int tr, int l, int r) {
-		if(r < l) 
-			return e();
-		if(l == tl && r == tr) 
-			return t[v];
-
-		int tm = (tl + tr)/2;
-		return op(_query(2*v, tl, tm, l, min(tm, r)),
-				_query(2*v+1, tm+1, tr, max(l, tm+1), r));
-	}
-
-	T get(int p) { // To be tested
-		if(!(0 <= p && p < N)) return e();
-		return t[p + N];
-	}
-
-	void set(int pos, T new_val) {
-		_update(1, 0, size()-1, pos, new_val);
-	}
-
-	T query(int l, int r) {
-		return _query(1, 0, size()-1, l, r);
-	}
 };
 
-int main(){
-	int N, Q; cin >> N >> Q;
-	vector<long long> x(N);
-	for(auto &e: x) cin >> e;
-	seg_tree tree(x);
+int main() {
+    int n, q;
+    scanf("%d %d", &n, &q);
+    vector<long long> a(n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &(a[i]));
+    }
 
-	while(Q--) {
-		int c; cin >> c;
-		if(c == 1) {
-			int k, u; cin >> k >> u;
-			tree.update(1, 0, tree.size()-1, k-1, u);
+    segtree<long long> seg(a);
+
+	while(q--) {
+		int t; cin >> t;
+		if(t == 0) {
+			int p, x; cin >> p >> x;
+			seg.set(p, seg.get(p) + x);
 		} else {
-			int a, b; cin >> a >> b;
-			cout << tree.query(1, 0, tree.size()-1, a-1, b-1) << endl;
+			int l, r; cin >> l >> r;
+			cout << seg.prod(l, r-1) << endl;
 		}
 	}
-
-
-	return 0;
 }
