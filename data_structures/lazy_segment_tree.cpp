@@ -1,90 +1,113 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct lazy_seg {
-	int N = 1;
-	vector<long long> t;
-	vector<bool> marked;
+template <class S, 
+		  S (*op)(S, S),
+		  S (*e)(),
+		  class F,
+		  S (*mapping)(F, S),
+		  F (*composition)(F, F),
+		  F (*id)()>
+class lazy_segtree {
+private: 
+	int n, N, log;
+	vector<S> tree;
+	vector<F> lazy;
+	void update(int k) { tree[k] = op(tree[2*k], tree[2*k+1]); }
+	void all_apply(int k, F f) {
+		tree[k] = mapping(f, tree[k]);
+		if(k < N) lazy[k] = composition(f, lazy[k]);
+	}
+	void push(int k) {
+		all_apply(2*k, lazy[k]);
+		all_apply(2*k + 1, lazy[k]);
+		lazy[k] = id();
+	}
+public:
 
-	void build(vector<long long> &a, int v, int tl, int tr) {
-		if(tl == tr) {
-			if(tl < a.size()) t[v] = a[tl];
-		} else {
-			int tm = (tl + tr)/2;
-			build(a, 2*v, tl, tm);
-			build(a, 2*v+1, tm+1, tr);
-			t[v] = t[2*v] + t[2*v+1];
+	S get(int p) const {
+		assert(0 <= p && p < n);
+		p += N;
+		for(int i = log; i >= 1; i--) push(p >> i);
+		return tree[p];
+	}
+
+	void set(int p, S x) {
+		assert(0 <= p && p < n);
+		p += N;
+		for(int i = log; i >= 1; i--) push(p >> i);
+		tree[p] = x;
+		for(int i = 1; i <= log; i++) update(p >> i);
+	}
+
+	// inclusive, 0-indexed
+	S prod(int l, int r) const {
+		assert(0 <= l && l <= r && r < n);
+		l += N, r += N + 1; // now r becomes non-inclusive
+		for(int i = log; i >= 1; i--) {
+			if(((l>>i)<<i) != l) push(l >> i);
+			if(((r>>i)<<i) != r) push((r-1) >> i);
+		}
+		S lv = e(), rv = e();
+		while(l < r) {
+			if(l & 1) lv = op(lv, tree[l++]);
+			if(r & 1) rv = op(tree[--r], rv);
+			l >>= 1, r >>= 1;
+		}
+		return op(lv, rv);
+	}
+
+	S all_prod() const { return tree[1]; }
+
+	void apply(int p, F f) {
+		assert(0 <= p && p < n);
+		p += N;
+		for(int i = log; i >= 1; i--) push(p >> i);
+		tree[p] = mapping(f, tree[p]);
+		for(int i = 1; i <= log; i++) update(p >> i);
+	}
+
+	// inclusive
+	void apply(int l, int r, F f) {
+		assert(0 <= l && l <= r && r < n);
+		l += N, r += N + 1; // now r becomes non-inclusive
+		for(int i = log; i >= 1; i--) {
+			if(((l>>i)<<i) != l) push(l >> i);
+			if(((r>>i)<<i) != r) push((r-1) >> i);
+		}
+
+		int lprev = l, rprev = r;
+		while(l < r) {
+			if(l & 1) all_apply(l++, f);
+			if(r & 1) all_apply(--r, f);
+			l >>= 1;
+			r >>= 1;
+		}
+		l = lprev, r = rprev;
+
+		for(int i = 1; i <= log; i++) {
+			if(((l>>i)<<i) != l) update(l >> i);
+			if(((r>>i)<<i) != r) update((r-1) >> i);
 		}
 	}
 
-	void resize(int n) {
-		N = 1; while(N < n) N <<= 1;
-		t.assign(2*N+1, 0);
-		marked.assign(2*N+1, false);
-	}
-
-	seg_tree(int n) { resize(n); }	
-
-	seg_tree(vector<long long> &a) {
-		resize(a.size());
-		build(a, 1, 0, N-1);
-	}	
-
-	int size() { return N; }
-
-	void push(int v) {
-		if (marked[v]) {
-			t[v*2] = t[v*2+1] = t[v];
-			marked[v*2] = marked[v*2+1] = true;
-			marked[v] = false;
+	lazy_segtree(): lazy_segtree(0) {}
+	lazy_segtree(int _n) : lazy_segtree(vector<S>(_n, e())) {}
+	lazy_segtree(const vector<S> &v) : n(v.size()) {
+		N = 1, log = 0;
+		while(N < n) {
+			N <<= 1, log++;
+		}
+		tree.assign(2*N, e());
+		lazy.assign(N, id());
+		for(int i = 0; i < n; i++) tree[N + i] = v[i];
+		for(int i = N-1; i >= 1; i--) {
+			update(i);
 		}
 	}
 
-	// first call: update(1, 0, tree.size()-1, pos, new_val)
-	void update(int v, int tl, int tr, int l, int r, int new_val) {
-		if (l > r) 
-			return;
-		if (l == tl && tr == r) {
-			t[v] = new_val;
-			marked[v] = true;
-		} else {
-			push(v);
-			int tm = (tl + tr) / 2;
-			update(v*2, tl, tm, l, min(r, tm), new_val);
-			update(v*2+1, tm+1, tr, max(l, tm+1), r, new_val);
-		}
-	}
-
-	int get(int v, int tl, int tr, int pos) {
-		if (tl == tr) {
-			return t[v];
-		}
-		push(v);
-		int tm = (tl + tr) / 2;
-		if (pos <= tm) 
-			return get(v*2, tl, tm, pos);
-		else
-			return get(v*2+1, tm+1, tr, pos);
-	}
 };
 
 int main(){
-	int N, Q; cin >> N >> Q;
-	vector<long long> x(N);
-	for(auto &e: x) cin >> e;
-	seg_tree tree(x);
-
-	while(Q--) {
-		int c; cin >> c;
-		if(c == 1) {
-			int k, u; cin >> k >> u;
-			tree.update(1, 0, tree.size()-1, k-1, u);
-		} else {
-			int a, b; cin >> a >> b;
-			cout << tree.query(1, 0, tree.size()-1, a-1, b-1) << endl;
-		}
-	}
-
-
 	return 0;
 }

@@ -19,11 +19,12 @@ private:
 public:
 
 	S get(int p) const {
+		assert(0 <= p && p < n);
 		return tree[p + N];
 	}
 
 	void set(int p, S x) {
-		assert(0 <= p && p < N);
+		assert(0 <= p && p < n);
 		p += N;
 		tree[p] = x;
 		for(int i = 1; i <= log; i++) update(p >> i);
@@ -45,7 +46,7 @@ public:
 	S all_prod() const { return tree[1]; }
 
 	segtree(): segtree(0) {}
-	segtree(int _n) : segtree(vector<S>(n, e())) {}
+	segtree(int _n) : segtree(vector<S>(_n, e())) {}
 	segtree(const vector<S> &v) : n(v.size()) {
 		N = 1, log = 0;
 		while(N < n) {
