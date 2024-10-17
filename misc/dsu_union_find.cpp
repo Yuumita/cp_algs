@@ -1,49 +1,68 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct DSU {
-	int components = 0;
-	vector<int> parent, size;
+class DSU {
+public:
+	DSU() : N(0), components(0) {}
+	DSU(int n) : N(n), parent_size(n, -1), components(N) {}
 
-	DSU(int n = -1){
-		if(n >= 0) init(n);
+	int leader(int u){
+		assert(0 <= u && u < N);
+		if(parent_size[u] < 0) return u;
+		return parent_size[u] = leader(parent_size[u]);
 	}
 
-	void init(int n){
-		components = n;
-		size.assign(n+1, 1);
-		parent.resize(n+1); 
-		iota(parent.begin(), parent.end(), 0);
+	bool same(int u, int v) {
+		assert(0 <= u && u < N);
+		assert(0 <= v && v < N);
+		return leader(u) == leader(v);
 	}
 
-	int find(int u){
-		return u == parent[u] ? u : parent[u] = find(parent[u]);
+	int size(int u) {
+		assert(0 <= u && u < N);
+		return -parent_size[leader(u)];
 	}
 
-	// merging u to v, returns false if they were connected (true if merged succesfully)
-	bool merge(int u, int v){ 
-		u = find(u), v = find(v);
-		if(u == v) return false;
-
-		if(size[u] > size[v]) swap(u, v); 
-
-		parent[u] = v;
-		size[v] += size[u];
+	// reterns the representative of the merged set
+	int merge(int u, int v){ 
+		assert(0 <= u && u < N);
+		assert(0 <= v && v < N);
+		u = leader(u), v = leader(v);
+		if(u == v) return u;
+		if(-parent_size[u] < -parent_size[v]) swap(u, v); // ensure size(u) >= size(v)
+		parent_size[u] += parent_size[v];
+		parent_size[v] = u;
 		components--;
-		return true;
+		return u;
 	}
+
+	vector<vector<int>> groups() {
+        vector<vector<int>> g(N, vector<int>());
+        for (int i = 0; i < N; i++) {
+            g[leader(i)].push_back(i);
+        }
+        g.erase(
+            remove_if(g.begin(), g.end(),
+						[&](const vector<int>& v) { return v.empty(); }),
+            g.end());
+        return g;
+	}
+
+private:
+	int N;
+	int components;
+	vector<int> parent_size; // parent_size[i] < 0 => size[i], else => parent[i]
 };
 
 int main(){
 	int N, Q; cin >> N >> Q;
-	int t[Q], u[Q], v[Q];
-	DSU dsu(N);
-	for(int i=0;i<Q;i++){
-		cin >> t[i] >> u[i] >> v[i];
-		if(t[i]){
-			cout << (dsu.find(u[i]) == dsu.find(v[i])) << endl;			
+	DSU uf(N);
+	while(Q--) {
+		int t, u, v; cin >> t >> u >> v;
+		if(t == 0) {
+			uf.merge(u, v);
 		} else {
-			dsu.merge(u[i], v[i]);
+			cout << uf.same(u, v) << endl;
 		}
 	}
 	return 0;
