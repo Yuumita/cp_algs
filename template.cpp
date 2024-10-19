@@ -5,7 +5,7 @@ using pi = pair<int, int>;
 using pl = pair<ll, ll>;
 template<typename T> using min_heap = priority_queue<T, vector<T>, greater<T>>;
 template<typename T> using max_heap = priority_queue<T, vector<T>, greater<T>>;
-#define pb  push_back
+#define pb push_back
 #define mp make_pair
 #define all(x) (x).begin(), (x).end()
 #define forn(i,l,r) for(int i=(l); (i)<(r); i++)
