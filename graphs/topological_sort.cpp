@@ -2,26 +2,26 @@
 using namespace std;
 
 // Note: if there is a cycle, the size of the return will be less than n.
-vector<int> topological_sort(const vector<vector<int>> &adj) {
+template <typename G = vector<vector<int>>>
+vector<int> topological_sort(const G &adj) {
     int n = int(adj.size());
     vector<int> in_degree(n, 0), order;
 
     for (int i = 0; i < n; i++)
-        for (int neighbor : adj[i])
-            in_degree[neighbor]++;
+        for (int v : adj[i])
+            in_degree[v]++;
 
     for (int i = 0; i < n; i++)
         if (in_degree[i] == 0)
             order.push_back(i);
 
-    int current = 0;
+    int u = 0;
+    while (u < int(order.size())) {
+        int node = order[u++];
 
-    while (current < int(order.size())) {
-        int node = order[current++];
-
-        for (int neighbor : adj[node])
-            if (--in_degree[neighbor] == 0)
-                order.push_back(neighbor);
+        for (int v : adj[node])
+            if (--in_degree[v] == 0)
+                order.push_back(v);
     }
 
     return order;

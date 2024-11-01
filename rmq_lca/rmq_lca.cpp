@@ -28,7 +28,6 @@ struct RMQ {
         log[1] = 0;
         for(int i = 2; i <= n; i++) log[i] = log[i/2] + 1;
 
-
         for(int i = 0; i < n; i++) v[i] = v0[i];
         for(int i = 0; i < n; i++) spi[i][0] = i;
         for(int j = 1; j <= K; j++)
@@ -84,7 +83,6 @@ public:
             euler.push_back(u);
         }
     }
-
 
     void build(int root = 0, bool build_rmq = true) {
         assert(0 <= root && root < n);

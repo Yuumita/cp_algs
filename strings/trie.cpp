@@ -1,11 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-//const char MIN_CHAR = 'a'; 
-//const int ALPHABET = 26;
-
-template<char MIN_CHAR = 'a', int ALPHABET = 26>
-struct array_trie {
+template<char MIN_CHAR = 'a', size_t ALPHABET = 26>
+struct Trie {
     struct trie_node {
         int child[ALPHABET];
 
@@ -61,7 +58,7 @@ int main() {
 
     int N;
     cin >> N;
-    array_trie<> trie;
+    Trie<> trie;
 
     for (int i = 0; i < N; i++) {
         string str;
