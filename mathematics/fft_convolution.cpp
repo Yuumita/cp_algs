@@ -29,6 +29,7 @@ void fft(vector<cd> &a, bool invert){
 }
 
 vector<long long> convolution(vector<long long> &a, vector<long long> &b) { 
+	if(a.size() == 0 || b.size() == 0) return {};
 	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
 	int n = 1;
 	while(n < a.size() + b.size()) n <<= 1;
