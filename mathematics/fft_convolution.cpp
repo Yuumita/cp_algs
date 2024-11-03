@@ -28,6 +28,28 @@ void fft(vector<cd> &a, bool invert){
 	}
 }
 
+vector<long long> convolution(vector<long long> &a, vector<long long> &b) { 
+	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+	int n = 1;
+	while(n < a.size() + b.size()) n <<= 1;
+
+	fa.resize(n);
+	fb.resize(n);
+
+	fft(fa, false);
+	fft(fb, false);
+
+	for(int i = 0 ; i < n; i++) 
+		fa[i] *= fb[i];
+
+	fft(fa, true);
+
+	vector<long long> c(n);
+	for(int i = 0; i < n; i++) c[i] = round(fa[i].real());
+	return c;
+}
+
+
 vector<long long> cyclic_convolution_naive(vector<long long> &a, vector<long long> &b) { 
 	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
 	assert(a.size() == b.size());
@@ -59,27 +81,6 @@ vector<long long> cyclic_convolution(vector<long long> &a, vector<long long> &b)
 	vector<long long> c(n);
 	for(int i = 0; i < n; i++) c[i] = round(fa[i].real());
 	while((int)c.size() > N) c.pop_back();
-	return c;
-}
-
-vector<long long> convolution(vector<long long> &a, vector<long long> &b) { 
-	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
-	int n = 1;
-	while(n < a.size() + b.size()) n <<= 1;
-
-	fa.resize(n);
-	fb.resize(n);
-
-	fft(fa, false);
-	fft(fb, false);
-
-	for(int i = 0 ; i < n; i++) 
-		fa[i] *= fb[i];
-
-	fft(fa, true);
-
-	vector<long long> c(n);
-	for(int i = 0; i < n; i++) c[i] = round(fa[i].real());
 	return c;
 }
 
