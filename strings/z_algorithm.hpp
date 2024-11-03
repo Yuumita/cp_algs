@@ -21,12 +21,3 @@ vector<int> z_algorithm(const Container &s) {
     }
     return a;
 }
-
-int main() {
-    string s; cin >> s;
-    for(auto &e: z_algorithm(s)) {
-        cout << e << " ";
-    }
-    cout << endl;
-    return 0;
-}

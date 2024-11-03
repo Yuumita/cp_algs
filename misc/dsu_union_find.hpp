@@ -53,17 +53,3 @@ private:
 	int components;
 	vector<int> parent_size; // parent_size[i] < 0 => size[i], else => parent[i]
 };
-
-int main(){
-	int N, Q; cin >> N >> Q;
-	DSU uf(N);
-	while(Q--) {
-		int t, u, v; cin >> t >> u >> v;
-		if(t == 0) {
-			uf.merge(u, v);
-		} else {
-			cout << uf.same(u, v) << endl;
-		}
-	}
-	return 0;
-}
