@@ -46,6 +46,7 @@ vector<long long> convolution(vector<long long> &a, vector<long long> &b) {
 
 	vector<long long> c(n);
 	for(int i = 0; i < n; i++) c[i] = round(fa[i].real());
+	c.resize(a.size() + b.size() - 1);
 	return c;
 }
 
@@ -84,20 +85,12 @@ vector<long long> cyclic_convolution(vector<long long> &a, vector<long long> &b)
 	return c;
 }
 
-void output_poly(vector<long long> &a) {
-	for(int k = 0; k < a.size(); k++){
-		cout << a[k] << "x^" << k << (k + 1 < a.size() ? " + " : "\n");
-	}
-}
-
 template<class T> ostream& operator <<(ostream &os, const vector<T> &v) { for(auto &e: v) os << e << " "; return os; }
  
 int main(){
-	int N; cin >> N;
-	vector<long long> A(N), B(N), C;
+	int N, M; cin >> N >> M;
+	vector<long long> A(N), B(M);
 	for(auto &e: A) cin >> e;
 	for(auto &e: B) cin >> e;
 	cout << convolution(A, B) << endl;
-	cout << cyclic_convolution(A, B) << endl;
-	cout << cyclic_convolution_naive(A, B) << endl;
 }
